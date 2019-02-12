@@ -39,6 +39,7 @@
 #include <message_filters/synchronizer.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
+#include <mav_msgs/ImuStateUpdate.h>
 #include <tf/transform_datatypes.h>
 #include <tf/transform_broadcaster.h>
 
@@ -58,8 +59,6 @@ class ComplementaryFilterROS
     // Convenience typedefs
     typedef sensor_msgs::Imu ImuMsg;
     typedef sensor_msgs::MagneticField MagMsg;
-    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Imu, 
-        MagMsg> MySyncPolicy;
     typedef message_filters::sync_policies::ApproximateTime<ImuMsg, MagMsg> 
         SyncPolicy;
     typedef message_filters::Synchronizer<SyncPolicy> Synchronizer;    
@@ -75,6 +74,7 @@ class ComplementaryFilterROS
     boost::shared_ptr<MagSubscriber> mag_subscriber_;
 
     ros::Publisher imu_publisher_;
+    ros::Publisher imuUpdate_publisher_;
     ros::Publisher rpy_publisher_;
     ros::Publisher state_publisher_;
     tf::TransformBroadcaster tf_broadcaster_;

@@ -51,6 +51,8 @@ ComplementaryFilterROS::ComplementaryFilterROS(
   // Register publishers:
   imu_publisher_ = nh_.advertise<sensor_msgs::Imu>(ros::names::resolve("imu") + "/data", queue_size);
 
+  imuUpdate_publisher_ = nh_.advertise<mav_msgs::ImuStateUpdate>("imu_state_update", queue_size);
+
   if (publish_debug_topics_)
   {
       rpy_publisher_ = nh_.advertise<geometry_msgs::Vector3Stamped>(
@@ -99,9 +101,9 @@ void ComplementaryFilterROS::initializeParams()
   if (!nh_private_.getParam ("fixed_frame", fixed_frame_))
     fixed_frame_ = "odom";
   if (!nh_private_.getParam ("use_mag", use_mag_))
-    use_mag_ = false;
+    use_mag_ = true;
   if (!nh_private_.getParam ("publish_tf", publish_tf_))
-    publish_tf_ = false;
+    publish_tf_ = true;
   if (!nh_private_.getParam ("reverse_tf", reverse_tf_))
     reverse_tf_ = false;
   if (!nh_private_.getParam ("constant_dt", constant_dt_))
@@ -255,6 +257,14 @@ void ComplementaryFilterROS::publish(
   }
 
   imu_publisher_.publish(imu_msg);
+  
+  mav_msgs::ImuStateUpdate imuUpdate_msg;
+  imuUpdate_msg.header = imu_msg_raw->header;
+  tf::quaternionTFToMsg(q, imuUpdate_msg.pose.pose.orientation);
+  imuUpdate_msg.angular_velocity_bias.x = filter_.getAngularVelocityBiasX();
+  imuUpdate_msg.angular_velocity_bias.y = filter_.getAngularVelocityBiasY();
+  imuUpdate_msg.angular_velocity_bias.z = filter_.getAngularVelocityBiasZ();
+  imuUpdate_publisher_.publish(imuUpdate_msg);
 
   if (publish_debug_topics_)
   {

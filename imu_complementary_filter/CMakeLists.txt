@@ -7,13 +7,14 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
+  mav_msgs
   tf
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES complementary_filter
-  CATKIN_DEPENDS message_filters roscpp sensor_msgs std_msgs tf
+  CATKIN_DEPENDS message_filters roscpp sensor_msgs std_msgs mav_msgs tf
 )
 
 include_directories(
